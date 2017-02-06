@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Food Inspection</title>
+        
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+<div class="container">
+    <div class="jumbotron">
+        <h1>Food Inspections </h1>
+        <p>Returns data on Food Inspections made as a result of complaints</p>
+        <hr>
+        Enter a zip code
+        <input id="txtZip" type="text" placeholder="Enter a Chicago Zip Code" />
+        <br>
+
+        <br>
+        <button id="btnGetInsp">Get Food Inspections</button>
+        
+        <p id="pFails"></p>
+    </div>
+    <h2>Food Inspection Results</h2>
+    <div id="panelGroupResults" class="panel-group">
+
+    </div>
+</div>
+
+    <script>
+        // base URL with filter on inspection_type;  zip will be appended
+        var jsonURL ="https://data.cityofchicago.org/resource/cwig-ma7x.json?inspection_type=Complaint&zip=";
+   
+        var loopHTML, loopStatus;
+        // hook up click event handler
+        
+        $("#btnGetInsp").click(function () {
+            jsonURL = jsonURL + $("#txtZip").val();
+            
+            $.getJSON(jsonURL)
+                .done(function (result) {
+                    console.log(result)
+                    // create a panel for each one
+                    $.each(result, function (i, val) {
+                       // constructing the HTML for a Bootstrap panel
+                       if (val.results === 'Pass') {
+                           loopHTML =
+                        '<div class="panel panel-success">';
+                       }
+                       else if (val.results === 'Fail') {
+                           loopHTML =
+                        '<div class="panel panel-danger">';
+                       }
+                       else  {
+                           loopHTML =
+                        '<div class="panel panel-warning">';
+                       }
+                       
+                       loopHTML +=
+                         '<div class="panel-heading">'
+                        + val.dba_name 
+                        + '</div>'
+                        + '<div class="panel-body">'
+                        + val.results.toUpperCase()
+                        + ", " 
+                        + val.inspection_date
+                        + ", " 
+                        + val.facility_type
+                        + ", "
+                        + '</div>'
+                        +   '</div>';
+                       
+                       $("#panelGroupResults").append(loopHTML);
+                        
+                    });
+                    
+                })
+                .fail(function () {
+                    console.log('failure') 
+                });           
+            
+            
+        })
+        
+        
+ 
+        
+    </script>
+    </body>
+</html>
